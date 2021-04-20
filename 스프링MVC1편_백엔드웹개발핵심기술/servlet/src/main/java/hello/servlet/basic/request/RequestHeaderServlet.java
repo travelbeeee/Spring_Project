@@ -1,61 +1,25 @@
-# 스프링MVC1편_Sec02
+package hello.servlet.basic.request;
 
-### 1) 서블릿
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-```java
-@ServletComponentScan
-@SpringBootApplication
-public class ServletApplication {
-	public static void main(String[] args) {
-		SpringApplication.run(ServletApplication.class, args);
-	}
-}
-```
+@WebServlet(name = "requestHeaderServlet", urlPatterns = "/request-header")
+public class RequestHeaderServlet extends HttpServlet {
 
-스프링이 @ServletComponentScan 애노테이션을 통해 서블릿을 하위 패키지의 서블릿을 자동 등록해준다.
-
-```java
-@WebServlet(name = "helloServlet", urlPatterns = "/hello")
-public class HelloServlet extends HttpServlet {
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("HelloServlet.service");
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        printStartLine(request);
+        printHeaders(request);
+        printHeaderUtils(request);
+        printEtc(request);
     }
-}
-```
 
-@WebServlet 애노테이션을 통해 `/hello` URL 에 `helloServlet` 이라는 이름의 서블릿을 동작시킬 수 있다.
-
-- name : 서블릿 이름
-- urlPatterns : URL 매핑
-
-HTTP 요청을 통해 매핑된 URL이 호출되면 서블릿 컨테이너는 해당 서블릿의 service 메소드를 실행하고, WAS가 HttpServletRequest 객체와 HttpServletResponse 객체를 만들어서 던져준다.
-
-<br>
-
-### 2) HttpServletRequest
-
-HTTP 요청 메시지를 개발자가 직접 파싱해서 사용해도 되지만, 서블릿 개발자가 HTTP 요청 메시지를 편리하게 사용할 수 있도록 개발자 대신에 HTTP 요청 메시지를 파싱해준다. 그리고 그 결과를 `HttpServletRequest`객체에 담아서 제공한다.
-
-##### -임시저장소기능
-
-`HttpServletRequest` 는 HTTP 요청이 시작부터 끝날 때 까지 유지되는 임시 저장소 기능도 한다.
-
-- request.setAttribute(name, value);
-- request.getAttribute(name);
-
-으로 객체에 값을 저장하고 꺼내올 수 있다.
-
-##### -세션 관리 기능
-
-- request.getSession(create: true)
-
-<br>
-
-WAS가 지원해주는 `HttpServletRequest`는 HTTP Request 메시지를 이용할 수 있는 정말 다양한 메소드들을 지원해준다.
-
-```java
-//start line 정보
+    //start line 정보
     private void printStartLine(HttpServletRequest request) {
         System.out.println("--- REQUEST-LINE - start ---");
         System.out.println("request.getMethod() = " + request.getMethod()); //GET
@@ -138,21 +102,4 @@ WAS가 지원해주는 `HttpServletRequest`는 HTTP Request 메시지를 이용�
         System.out.println("--- 기타 조회 end ---");
         System.out.println();
     }
-```
-
-<br>
-
-HTTP 요청 메시지를 통해 클라이언트에서 서버로 데이터를 전달하는 방법
-
-- GET - 쿼리 파라미터
-
-  : GET 방식은 보통 HTTP Message Body 보다는 URL 쿼리 파라미터에 데이터를 포함해서 전달한다.
-
-- POST - HTML Form
-
-  : HTML Form을 이용한 Post 방식은 메시지 바디에 쿼리 파라미터 형식으로 전달한다. --> content-type: application/x-www-form-urlencoded
-
-- HTTP Message body
-
-  : HTTP API 에서 주료 사용하고,  데이터 형식은 최근에는 JSON 을 주로 사용한다.
-
+}
