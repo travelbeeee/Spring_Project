@@ -156,3 +156,75 @@ HTTP 요청 메시지를 통해 클라이언트에서 서버로 데이터를 전
 
   : HTTP API 에서 주료 사용하고,  데이터 형식은 최근에는 JSON 을 주로 사용한다.
 
+<br>
+
+**HTTP 요청 데이터 - GET 쿼리 파라미터로 값 넘기기**
+
+```java
+/**
+ * 1. 파라미터 전송 기능
+ * http://localhost:8080/request-param?username=hello&age=20&username=hello2
+ */
+@WebServlet(name = "requestParamServlet", urlPatterns = "/request-param")
+public class RequestParamServlet extends HttpServlet {
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("[전체 파라미터 조회] - start");
+        request.getParameterNames().asIterator()
+                .forEachRemaining(paramName -> System.out.println(paramName + "=" + request.getParameter(paramName)));
+        System.out.println("[전체 파라미터 조회] - end");
+        System.out.println();
+
+        System.out.println("[단일 파라미터 조회] - start");
+        String username = request.getParameter("username");
+        String age = request.getParameter("age");
+        System.out.println("username = " + username);
+        System.out.println("age = " + age);
+        System.out.println("[단일 파라미터 조회] - end");
+		System.out.println();
+        System.out.println("[이름이 같은 복수 파라미터 조회] - start");
+        String[] usernames = request.getParameterValues("username");
+        for (String s : usernames) {
+            System.out.println("username = " + s);
+        }
+        System.out.println("[이름이 같은 복수 파라미터 조회] - end");
+    }
+}
+```
+
+```
+[ 출력 ]
+[전체 파라미터 조회] - start
+username=hello
+age=20
+[전체 파라미터 조회] - end
+
+[단일 파라미터 조회] - start
+username = hello
+age = 20
+[단일 파라미터 조회] - end
+
+[이름이 같은 복수 파라미터 조회] - start
+username = hello
+username = hello2
+[이름이 같은 복수 파라미터 조회] - end
+```
+
+- request.getParameterNames() 메소드를 통해서 Parameter 값이 아니라 Parameter 의 Key를 다 받아올 수 있다.
+- request.getParameter("parameterName") 메소드는 `parameterName`에 해당하는 파라미터 값을 받아온다. 이때, `parameterName`이 중복되어있으면 하나만 가져오므로 주의하자.
+- request.getParameterValues("parameterName") 메소드는 `parameterName`에 해당하는 파라미터 값을 다 받아온다. 중복되어있을 때 사용하면 된다.
+
+<br>
+
+**HTTP 요청 데이터 -POST HTML FORM**
+
+HTML Form 을 사용해서 파라미터를 넘기면 웹 브라우저가 HTTP Request 메시지를 아래 그림과 같이 만든다. 이때도, GET 메소드에서 쿼리 파라미터로 넘긴 것과 동일한 메소드를 사용해서 파라미터를 받을 수 	있다.
+
+![springmvc_sec02_01](https://user-images.githubusercontent.com/59816811/115517533-2f8c2180-a2c2-11eb-80a7-98a78a87d621.png)
+
+> 클라이언트 입장에서는 GET 메소드의 쿼리 파라미터로 보내는 방식이랑 HTML Form 형식으로 POST 메소드로 보내는 방식이 서로 다르나 서버 입장에서는 파라미터를 받아오는 방식이 똑같음!
+
+<br>
+
+**HTTP 요청 데이터 - API 메시지 바디**
+
