@@ -218,7 +218,7 @@ username = hello2
 
 **HTTP 요청 데이터 -POST HTML FORM**
 
-HTML Form 을 사용해서 파라미터를 넘기면 웹 브라우저가 HTTP Request 메시지를 아래 그림과 같이 만든다. 이때도, GET 메소드에서 쿼리 파라미터로 넘긴 것과 동일한 메소드를 사용해서 파라미터를 받을 수 	있다.
+ HTML Form 을 사용해서 파라미터를 넘기면 웹 브라우저가 HTTP Request 메시지를 아래 그림과 같이 만든다. 이때도, GET 메소드에서 쿼리 파라미터로 넘긴 것과 동일한 메소드를 사용해서 파라미터를 받을 수 있다.
 
 ![springmvc_sec02_01](https://user-images.githubusercontent.com/59816811/115517533-2f8c2180-a2c2-11eb-80a7-98a78a87d621.png)
 
@@ -227,4 +227,177 @@ HTML Form 을 사용해서 파라미터를 넘기면 웹 브라우저가 HTTP Re
 <br>
 
 **HTTP 요청 데이터 - API 메시지 바디**
+
+```java
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ServletInputStream inputStream = request.getInputStream(); // messageBody의 내용을 ByteCode로 다 얻음
+
+        // ByteCode 를 스프링에서 지원해주는 StreamUtils를 이용해 UTF-8로 인코딩해서 String으로 변환
+        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+        System.out.println("messageBody = " + messageBody);
+
+        response.getWriter().write("OK");
+    }
+```
+
+messageBody의 내용을 모두 ByteCode로 받아와, String으로 변환할 수 있다.
+
+<br>
+
+##### HTTP 요청 데이터 - API 메시지 바디 - JSON
+
+API에서 주료 사용하는 JSON 형식으로 데이터를 전달해보자.
+
+JSON 형식의 데이터는 보통 객체로 매핑해서 전달받으므로 전달받을 객체를 만들자. `HelloData`
+
+```java
+@Getter @Setter
+public class HelloData {
+    private String username;
+    private int age;
+}
+```
+
+ JSON 라이브러리가 값을 할당해주기 위해 Getter, Setter를 열어두어야한다.
+
+JSON 형식으로 넘어올 뿐이지 기본적으로 메시지바디는 우리가 String으로 받아와야한다. 이거를 JSON 라이브러리를 통해 파싱을 한다.
+
+```java
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 일단 MessageBody에 있는 Json 형식의 데이터를 다 받아온다.
+        ServletInputStream inputStream = request.getInputStream();
+        String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+
+        HelloData helloData = objectMapper.readValue(messageBody, HelloData.class);
+        
+    }
+```
+
+ObjectMapper의 readValue 메소드를 이용해서 messageBody를 우리가 원하는 객체에 파싱해서 할당할 수 있다.
+
+> JSON 결과를 파싱해서 사용할 수 있는 자바 객체로 변환하려면 Jackson, Gson 같은 변환 라이브러리를 추가해서 사용해야되는데, 스프링 부트로 Spring MVC를 선택하면 기본으로 Jackson 라이브러리(ObjectMapper)를 함께 제공한다. 
+
+<br>
+
+### 3) HttpServletResponse
+
+HttpServletResponse 객체를 통해 응답 메시지 설정들을 셋팅할 수 있다.
+
+```java
+  @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // [status-line]
+        response.setStatus(HttpServletResponse.SC_OK); 
+        // 응답코드셋팅 --> 200을 직접 써도 되지만 만들어놓은거를 사용하자!
+
+        // [response-headers]
+        response.setHeader("Content-Type", "text/plain;charset=utf-8");
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("my-header", "hello"); // 내가 헤더를 만들 수도 있음!
+
+        //[Header 편의 메서드]
+        content(response);
+        cookie(response);
+        redirect(response);
+        
+        // [message Body 생성]
+        response.getWriter().write("ㅎㅇㅎㅇ");
+    }
+
+    private void content(HttpServletResponse response) {
+        //Content-Type: text/plain;charset=utf-8
+        //Content-Length: 2
+        
+        //response.setHeader("Content-Type", "text/plain;charset=utf-8");
+        
+        response.setContentType("text/plain");
+        response.setCharacterEncoding("utf-8");
+        
+        //response.setContentLength(2); //(생략시 자동 생성)
+    }
+
+	// Cookie 셋팅하는 2가지 방법
+    private void cookie(HttpServletResponse response) {
+        //Set-Cookie: myCookie=good; Max-Age=600;
+        
+        //response.setHeader("Set-Cookie", "myCookie=good; Max-Age=600");
+        
+        Cookie cookie = new Cookie("myCookie", "good");
+        cookie.setMaxAge(600); //600초
+        response.addCookie(cookie);
+    }
+
+	// redirect 하는 2가지 방법
+    private void redirect(HttpServletResponse response) throws IOException {
+        //Status Code 302
+        //Location: /basic/hello-form.html
+        
+        //response.setStatus(HttpServletResponse.SC_FOUND); //302
+        //response.setHeader("Location", "/basic/hello-form.html");
+        
+        response.sendRedirect("/basic/hello-form.html");
+    }
+```
+
+ <br>
+
+HTTP 응답하는 방법
+
+- 단순 텍스트 응답 (`wrtier.wrtie()`)
+- HTML 응답
+- HTTP API - MessageBody JSON 응답
+
+<br>
+
+##### HttpServletResponse - HTML 응답
+
+```java
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Content-Type: text/html;charset=utf-8
+        response.setContentType("text/html"); // 웹 브라우저에게 HTML 이라고 알려줌
+        response.setCharacterEncoding("utf-8");
+
+        PrintWriter writer = response.getWriter();
+        writer.println("<html>");
+        writer.println("<body>");
+        writer.println("<div>안녕!</div>");
+        writer.println("</body>");
+        writer.println("</html>");
+    }
+```
+
+서블릿으로 HTML을 생성할 때는 하나하나 생성해야됨!
+
+<br>
+
+##### HttpServletResponse - HTTP API JSON
+
+제일 많이 사용하는 방식!
+
+```
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Content-type: application/json
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+
+        HelloData helloData = new HelloData();
+        helloData.setAge(10);
+        helloData.setUsername("user");
+
+        // helloData --> {"uesrname": "kim", "age": 20}
+        String res = objectMapper.writeValueAsString(helloData);
+        response.getWriter().write(res);
+        
+    }
+```
 
