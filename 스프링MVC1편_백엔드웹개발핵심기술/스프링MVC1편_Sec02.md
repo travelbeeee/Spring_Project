@@ -381,7 +381,7 @@ HTTP 응답하는 방법
 
 제일 많이 사용하는 방식!
 
-```
+```java
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
