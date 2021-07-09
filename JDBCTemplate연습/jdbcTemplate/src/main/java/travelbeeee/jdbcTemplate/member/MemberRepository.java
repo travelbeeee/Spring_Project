@@ -20,7 +20,7 @@ public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public List<Member> findAll() {
+    public List<Member> selectAll() {
         String sql = "select * from member";
         List<Member> members = jdbcTemplate.query(sql, new RowMapper<Member>() {
             @Override
