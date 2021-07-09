@@ -47,8 +47,6 @@ public class MemberRepository {
                 return member;
             }
         });
-        log.info("members : {}", members);
-        log.info("members.isEmpty : {}", members.isEmpty());
         if(members.isEmpty())
             return null;
         return members.get(0);
