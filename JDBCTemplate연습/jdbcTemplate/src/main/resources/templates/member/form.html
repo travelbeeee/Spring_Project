@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>회원가입폼</title>
+    <style>
+        .field-error {
+            border-color: #e2707b;
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${#fields.hasGlobalErrors()}">
+        <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+    </div>
+    <form th:action="" method="post" th:object="${member}">
+        <input type="text" th:field="*{name}" th:errorclass="field-error" placeholder="이름을 입력하세요.">
+        <div class="field-error" th:errors="*{name}"></div>
+        <input type="text" th:field="*{email}" th:errorclass="field-error" placeholder="이메일을 입력하세요.">
+        <div class="field-error" th:errors="*{email}"></div>
+    </form>
+</body>
+</html>

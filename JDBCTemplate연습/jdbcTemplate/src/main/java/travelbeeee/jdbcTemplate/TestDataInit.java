@@ -1,6 +1,7 @@
 package travelbeeee.jdbcTemplate;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import travelbeeee.jdbcTemplate.member.Member;
 import travelbeeee.jdbcTemplate.member.MemberRepository;
@@ -12,7 +13,6 @@ import javax.annotation.PostConstruct;
 public class TestDataInit {
 
     private final MemberRepository memberRepository;
-
     /**
      * 테스트용 데이터 추가
      */
