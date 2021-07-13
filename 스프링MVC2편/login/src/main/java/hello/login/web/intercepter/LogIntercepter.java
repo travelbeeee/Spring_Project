@@ -28,7 +28,7 @@ public class LogIntercepter implements HandlerInterceptor {
         
         log.info("REQUEST [{}][{}][{}]", uuid, requestURI, handler);
 
-        return true;
+        return true; // false 반환하면 핸들러를 호출하지않고 끝나버린다.
     }
 
     @Override
