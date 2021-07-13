@@ -48,7 +48,7 @@ public class HomeController {
         return "loginHome";
     }
 
-//    @GetMapping("/")
+    @GetMapping("/")
     public String homeLogin3(HttpServletRequest request, Model model) {
         HttpSession session = request.getSession(false);
         if(session == null) return "home";
@@ -68,7 +68,7 @@ public class HomeController {
         return "loginHome";
     }
 
-    @GetMapping("/")
+//    @GetMapping("/")
     public String homeLogin3ArgumentResolver(@Login Member member, Model model) {
         if (member == null) {
             return "home";

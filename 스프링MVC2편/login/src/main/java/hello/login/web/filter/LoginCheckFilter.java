@@ -37,7 +37,7 @@ public class LoginCheckFilter implements Filter {
             }
             chain.doFilter(request, response);
         }catch(Exception e){
-            throw e;
+            throw e; // 예외를 톰캣까지 올려줘야지 아니면 정상작동하는 것 처럼 동작함.
         }finally {
             log.info("인증 체크 필터 종료 {}", requestURI);
         }
