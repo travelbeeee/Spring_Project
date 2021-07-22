@@ -1,7 +1,6 @@
 package travelbeeee.upload.domain;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -61,6 +60,8 @@ public class ItemController {
     @ResponseBody
     @GetMapping("/images/{filename}")
     public Resource downloadImage(@PathVariable String filename) throws MalformedURLException {
+        log.info("downloadImage 동작");
+        log.info("file:" + fileStore.getFullPath(filename));
         return new UrlResource("file:" + fileStore.getFullPath(filename));
     }
 
