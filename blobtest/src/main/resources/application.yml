@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/blobtest
+    username: root
+    password: thcjs1130!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#      url: jdbc:h2:tcp://localhost/~/blobtest
+#      username: sa
+#      password:
+#      driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+#      ddl-auto: create
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        jdbc.batch_siize: 50
+        order_updates: true
+
+  messages:
+    basename: messages, errors
+
+#logging.level:
+#  org.hibernate.SQL: debug
+#  org.hibernate.type: trace
+
+file:
+  dir: C:/Users/fileDir/
