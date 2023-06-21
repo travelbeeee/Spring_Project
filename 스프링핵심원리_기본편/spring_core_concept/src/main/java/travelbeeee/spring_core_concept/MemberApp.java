@@ -10,6 +10,11 @@ import travelbeeee.spring_core_concept.member.MemberServiceImpl;
 public class MemberApp {
 
     public static void main(String[] args) {
+        /**
+         * V1 -> 직접 주입
+         */
+//        MemberService memberService = new MemberServiceImpl();
+
 //        AppConfig appConfig = new AppConfig();
 //        MemberService memberService = appConfig.memberService();
 
